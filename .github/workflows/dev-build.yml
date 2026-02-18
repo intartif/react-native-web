@@ -2,7 +2,7 @@ name: CI/CD Dev Trigger
 
 on:
   issues:
-    types: [labeled]
+    types: [opened]
 
 permissions:
   issues: write
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   trigger-cicd:
-    if: github.event.label.name == 'cicd-dev'
+    if: contains(github.event.issue.labels.*.name, 'cicd-dev')
     uses: intartif/demos-agent-skills/.github/workflows/react-cicd.yml@master
     with:
       branch: ${{ github.event.issue.body | fromJson | get('branch', '') }}
@@ -19,6 +19,7 @@ jobs:
       apply-build: ${{ github.event.issue.body | fromJson | get('build', '') }}
       apply-deploy: ${{ github.event.issue.body | fromJson | get('deploy', '') }}
       issue-id: ${{ github.event.issue.number }}
+      creator: ${{ github.event.issue.user.login }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
