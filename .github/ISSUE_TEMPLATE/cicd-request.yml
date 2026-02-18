@@ -1,0 +1,50 @@
+---
+name: "CI/CD Request"
+description: "Solicitar inicio del proceso de CI/CD para una rama específica"
+labels: [cicd-dev]
+assignees: []
+body:
+  - type: input
+    id: branch
+    attributes:
+      label: "Rama"
+      description: "Nombre de la rama para la que se solicita el proceso de CI/CD"
+      placeholder: "ejemplo: feature/nueva-funcionalidad"
+    validations:
+      required: true
+  - type: dropdown
+    id: test
+    attributes:
+      label: "¿Aplicar análisis de tests?"
+      options:
+        - "Sí"
+        - "No"
+    validations:
+      required: true
+  - type: dropdown
+    id: snyk
+    attributes:
+      label: "¿Aplicar análisis Snyk?"
+      options:
+        - "Sí"
+        - "No"
+    validations:
+      required: true
+  - type: dropdown
+    id: build
+    attributes:
+      label: "¿Aplicar build?"
+      options:
+        - "Sí"
+        - "No"
+    validations:
+      required: true
+  - type: dropdown
+    id: deploy
+    attributes:
+      label: "¿Aplicar deploy?"
+      options:
+        - "Sí"
+        - "No"
+    validations:
+      required: true

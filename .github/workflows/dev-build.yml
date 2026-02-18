@@ -1,0 +1,24 @@
+name: CI/CD Dev Trigger
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  trigger-cicd:
+    if: contains(github.event.issue.labels.*.name, 'cicd-dev')
+    uses: intartif/demos-agent-skills/.github/workflows/react-cicd.yml@master
+    with:
+      branch: ${{ github.event.issue.body | fromJson | get('branch', '') }}
+      apply-test: ${{ github.event.issue.body | fromJson | get('test', '') }}
+      apply-snyk: ${{ github.event.issue.body | fromJson | get('snyk', '') }}
+      apply-build: ${{ github.event.issue.body | fromJson | get('build', '') }}
+      apply-deploy: ${{ github.event.issue.body | fromJson | get('deploy', '') }}
+      issue-id: ${{ github.event.issue.number }}
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
