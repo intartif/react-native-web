@@ -24,13 +24,12 @@ jobs:
       - name: Set variables from issue body
         id: set-vars
         run: |
-          body='${{ toJson(github.event.issue.body) }}'
-          branch=$(echo "$body" | jq -r '.branch // empty')
-          apply_test=$(echo "$body" | jq -r '.test // empty')
-          apply_snyk=$(echo "$body" | jq -r '.snyk // empty')
-          apply_build=$(echo "$body" | jq -r '.build // empty')
-          apply_deploy=$(echo "$body" | jq -r '.deploy // empty')eact-cicd.yml
-
+          body="${{ github.event.issue.body }}"
+          branch=$(echo "$body" | awk '/### Rama/{getline; print $0}' | xargs)
+          apply_test=$(echo "$body" | awk '/### ¿Aplicar análisis de tests\?/{getline; print $0}' | xargs)
+          apply_snyk=$(echo "$body" | awk '/### ¿Aplicar análisis Snyk\?/{getline; print $0}' | xargs)
+          apply_build=$(echo "$body" | awk '/### ¿Aplicar build\?/{getline; print $0}' | xargs)
+          apply_deploy=$(echo "$body" | awk '/### ¿Aplicar deploy\?/{getline; print $0}' | xargs)
           echo "branch=$branch" >> $GITHUB_OUTPUT
           echo "apply_test=$apply_test" >> $GITHUB_OUTPUT
           echo "apply_snyk=$apply_snyk" >> $GITHUB_OUTPUT
