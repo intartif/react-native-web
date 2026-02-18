@@ -52,7 +52,20 @@ jobs:
 
   trigger-cicd:
     needs: read-issue-inputs
-    uses: intartif/demos-agent-skills/.github/workflows/react-cicd.yml@master
+    uses: intartif/demos-agent-skills/.github/workflows/react-cicd-reusable.yml@master
+    with:
+      branch: ${{ needs.read-issue-inputs.outputs.branch }}
+      apply-test: ${{ needs.read-issue-inputs.outputs.apply-test }}
+      apply-snyk: ${{ needs.read-issue-inputs.outputs.apply-snyk }}
+      apply-build: ${{ needs.read-issue-inputs.outputs.apply-build }}
+      apply-deploy: ${{ needs.read-issue-inputs.outputs.apply-deploy }}
+      issue-id: ${{ needs.read-issue-inputs.outputs.issue-id }}
+      creator: ${{ needs.read-issue-inputs.outputs.creator }}
+    secrets: inherit
+
+  trigger-cicd-non-security:
+    needs: read-issue-inputs
+    uses: intartif/demos-agent-skills/.github/workflows/react-cicd-non-security-reusable.yml@master
     with:
       branch: ${{ needs.read-issue-inputs.outputs.branch }}
       apply-test: ${{ needs.read-issue-inputs.outputs.apply-test }}
