@@ -1,5 +1,0 @@
-
-# Configuración para Label Actions - Solo label de CI/CD
-"cicd-dev":
-  comment: >
-    :rocket: Solicitud de CI/CD detectada. El proceso será gestionado según los parámetros indicados en el issue.

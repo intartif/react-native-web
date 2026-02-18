@@ -1,8 +1,10 @@
 ---
 name: "CI/CD Request"
 description: "Solicitar inicio del proceso de CI/CD para una rama específica"
+title: "[CI/CD] Solicitud de proceso para rama"
 labels: [cicd-dev]
-assignees: []
+assignees:
+  - "${{ github.actor }}"
 body:
   - type: input
     id: branch
