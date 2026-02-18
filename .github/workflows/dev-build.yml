@@ -9,17 +9,47 @@ permissions:
   contents: read
 
 jobs:
-  trigger-cicd:
+  read-issue-inputs:
     if: contains(github.event.issue.labels.*.name, 'cicd-dev')
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set-vars.outputs.branch }}
+      apply-test: ${{ steps.set-vars.outputs.apply_test }}
+      apply-snyk: ${{ steps.set-vars.outputs.apply_snyk }}
+      apply-build: ${{ steps.set-vars.outputs.apply_build }}
+      apply-deploy: ${{ steps.set-vars.outputs.apply_deploy }}
+      issue-id: ${{ steps.set-vars.outputs.issue_id }}
+      creator: ${{ steps.set-vars.outputs.creator }}
+    steps:
+      - name: Set variables from issue body
+        id: set-vars
+        run: |
+          body='${{ toJson(github.event.issue.body) }}'
+          branch=$(echo "$body" | jq -r '.branch // empty')
+          apply_test=$(echo "$body" | jq -r '.test // empty')
+          apply_snyk=$(echo "$body" | jq -r '.snyk // empty')
+          apply_build=$(echo "$body" | jq -r '.build // empty')
+          apply_deploy=$(echo "$body" | jq -r '.deploy // empty')
+          
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "apply_test=$apply_test" >> $GITHUB_OUTPUT
+          echo "apply_snyk=$apply_snyk" >> $GITHUB_OUTPUT
+          echo "apply_build=$apply_build" >> $GITHUB_OUTPUT
+          echo "apply_deploy=$apply_deploy" >> $GITHUB_OUTPUT
+          echo "issue_id=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          echo "creator=${{ github.event.issue.user.login }}" >> $GITHUB_OUTPUT
+
+  trigger-cicd:
+    needs: read-issue-inputs
     uses: intartif/demos-agent-skills/.github/workflows/react-cicd.yml@master
     with:
-      branch: ${{ github.event.issue.body | fromJson | get('branch', '') }}
-      apply-test: ${{ github.event.issue.body | fromJson | get('test', '') }}
-      apply-snyk: ${{ github.event.issue.body | fromJson | get('snyk', '') }}
-      apply-build: ${{ github.event.issue.body | fromJson | get('build', '') }}
-      apply-deploy: ${{ github.event.issue.body | fromJson | get('deploy', '') }}
-      issue-id: ${{ github.event.issue.number }}
-      creator: ${{ github.event.issue.user.login }}
+      branch: ${{ needs.read-issue-inputs.outputs.branch }}
+      apply-test: ${{ needs.read-issue-inputs.outputs.apply-test }}
+      apply-snyk: ${{ needs.read-issue-inputs.outputs.apply-snyk }}
+      apply-build: ${{ needs.read-issue-inputs.outputs.apply-build }}
+      apply-deploy: ${{ needs.read-issue-inputs.outputs.apply-deploy }}
+      issue-id: ${{ needs.read-issue-inputs.outputs.issue-id }}
+      creator: ${{ needs.read-issue-inputs.outputs.creator }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
