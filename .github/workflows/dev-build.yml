@@ -25,11 +25,12 @@ jobs:
         id: set-vars
         run: |
           body="${{ github.event.issue.body }}"
-          branch=$(echo "$body" | awk '/### Rama/{getline; print $0}' | xargs)
-          apply_test=$(echo "$body" | awk '/### ¿Aplicar análisis de tests\?/{getline; print $0}' | xargs)
-          apply_snyk=$(echo "$body" | awk '/### ¿Aplicar análisis Snyk\?/{getline; print $0}' | xargs)
-          apply_build=$(echo "$body" | awk '/### ¿Aplicar build\?/{getline; print $0}' | xargs)
-          apply_deploy=$(echo "$body" | awk '/### ¿Aplicar deploy\?/{getline; print $0}' | xargs)
+          # Extraer valores asegurando que no haya líneas vacías ni espacios
+          branch=$(echo "$body" | awk '/### Rama/{getline; while($0==""||$0~/^ *$/){getline}; print $0}' | xargs)
+          apply_test=$(echo "$body" | awk '/### ¿Aplicar análisis de tests\?/{getline; while($0==""||$0~/^ *$/){getline}; print $0}' | xargs)
+          apply_snyk=$(echo "$body" | awk '/### ¿Aplicar análisis Snyk\?/{getline; while($0==""||$0~/^ *$/){getline}; print $0}' | xargs)
+          apply_build=$(echo "$body" | awk '/### ¿Aplicar build\?/{getline; while($0==""||$0~/^ *$/){getline}; print $0}' | xargs)
+          apply_deploy=$(echo "$body" | awk '/### ¿Aplicar deploy\?/{getline; while($0==""||$0~/^ *$/){getline}; print $0}' | xargs)
           echo "branch=$branch" >> $GITHUB_OUTPUT
           echo "apply_test=$apply_test" >> $GITHUB_OUTPUT
           echo "apply_snyk=$apply_snyk" >> $GITHUB_OUTPUT
@@ -37,6 +38,17 @@ jobs:
           echo "apply_deploy=$apply_deploy" >> $GITHUB_OUTPUT
           echo "issue_id=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
           echo "creator=${{ github.event.issue.user.login }}" >> $GITHUB_OUTPUT
+
+      - name: Summary of extracted inputs
+        run: |
+          echo "### Issue Inputs Extracted" >> $GITHUB_STEP_SUMMARY
+          echo "- branch: ${{ steps.set-vars.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- apply-test: ${{ steps.set-vars.outputs.apply_test }}" >> $GITHUB_STEP_SUMMARY
+          echo "- apply-snyk: ${{ steps.set-vars.outputs.apply_snyk }}" >> $GITHUB_STEP_SUMMARY
+          echo "- apply-build: ${{ steps.set-vars.outputs.apply_build }}" >> $GITHUB_STEP_SUMMARY
+          echo "- apply-deploy: ${{ steps.set-vars.outputs.apply_deploy }}" >> $GITHUB_STEP_SUMMARY
+          echo "- issue-id: ${{ steps.set-vars.outputs.issue_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- creator: ${{ steps.set-vars.outputs.creator }}" >> $GITHUB_STEP_SUMMARY
 
   trigger-cicd:
     needs: read-issue-inputs
