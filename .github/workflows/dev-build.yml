@@ -61,6 +61,4 @@ jobs:
       apply-deploy: ${{ needs.read-issue-inputs.outputs.apply-deploy }}
       issue-id: ${{ needs.read-issue-inputs.outputs.issue-id }}
       creator: ${{ needs.read-issue-inputs.outputs.creator }}
-    secrets:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    secrets: inherit
