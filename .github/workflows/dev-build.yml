@@ -29,8 +29,8 @@ jobs:
           apply_test=$(echo "$body" | jq -r '.test // empty')
           apply_snyk=$(echo "$body" | jq -r '.snyk // empty')
           apply_build=$(echo "$body" | jq -r '.build // empty')
-          apply_deploy=$(echo "$body" | jq -r '.deploy // empty')
-          
+          apply_deploy=$(echo "$body" | jq -r '.deploy // empty')eact-cicd.yml
+
           echo "branch=$branch" >> $GITHUB_OUTPUT
           echo "apply_test=$apply_test" >> $GITHUB_OUTPUT
           echo "apply_snyk=$apply_snyk" >> $GITHUB_OUTPUT
@@ -52,4 +52,4 @@ jobs:
       creator: ${{ needs.read-issue-inputs.outputs.creator }}
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
